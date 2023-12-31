@@ -17,6 +17,7 @@ default_dataset_roots = dict(
     Cifar10='./data/cifar10',
     CUB200='./data/birds',
     PASCAL_VOC='./data/pascal_voc',
+    FashionMNIST = '.data/FashionMNIST'
 )
 
 
@@ -30,6 +31,7 @@ dataset_normalization = dict(
     CUB200=((0.47850531339645386, 0.4992702007293701, 0.4022205173969269),
             (0.23210887610912323, 0.2277066558599472, 0.26652416586875916)),
     PASCAL_VOC=((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
+    FashionMNIST=((0.5,), (0.5,))
 )
 
 
@@ -42,6 +44,7 @@ dataset_labels = dict(
              'deer', 'dog', 'monkey', 'horse', 'ship', 'truck'),
     CUB200=caltech_ucsd_birds.class_labels,
     PASCAL_VOC=pascal_voc.object_categories,
+    FashionMNIST  = ("Tshirt","Trouser","Pullover","Dress","Coat","Sandal", "Shirt","Sneaker","Bag","Ankle Boot")
 )
 
 # (nc, real_size, num_classes)
@@ -55,6 +58,7 @@ dataset_stats = dict(
     Cifar10=DatasetStats(3, 32, 10),
     CUB200=DatasetStats(3, 224, 200),
     PASCAL_VOC=DatasetStats(3, 224, 20),
+    FashionMNIST=DatasetStats(1,28,10)
 )
 
 assert(set(default_dataset_roots.keys()) == set(dataset_normalization.keys()) ==
@@ -184,6 +188,19 @@ def get_dataset(state, phase):
         if phase == 'train':
             phase = 'trainval'
         return pascal_voc.PASCALVoc2007(root, phase, transforms.Compose(transform_list))
+    
+    elif name == 'FashionMNIST':
+        if input_size != real_size:
+            transform_list = [transforms.Resize([input_size, input_size], Image.BICUBIC)]
+        else:
+            transform_list = []
+        transform_list += [
+            transforms.ToTensor(),
+            transforms.Normalize(*normalization),
+        ]
+        with suppress_stdout():
+            return datasets.FashionMNIST(root, train=(phase == 'train'), download=True,
+                                  transform=transforms.Compose(transform_list))
 
     else:
         raise ValueError('Unsupported dataset: %s' % state.dataset)

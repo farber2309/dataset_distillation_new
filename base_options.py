@@ -209,13 +209,13 @@ class BaseOptions(object):
         for name, action_cls in action_registry.items():
             action_registry[name] = get_unique_action_cls(action_cls)
 
-        parser.add_argument('--batch_size', type=pos_int, default=1024,
+        parser.add_argument('--batch_size', type=pos_int, default=256,
                             help='input batch size for training (default: 1024)')
         parser.add_argument('--test_batch_size', type=pos_int, default=1024,
                             help='input batch size for testing (default: 1024)')
         parser.add_argument('--test_niter', type=pos_int, default=1,
                             help='max number of batches to test (default: 1)')
-        parser.add_argument('--epochs', type=pos_int, default=400, metavar='N',
+        parser.add_argument('--epochs', type=pos_int, default=200, metavar='N',
                             help='number of total epochs to train (default: 400)')
         parser.add_argument('--decay_epochs', type=pos_int, default=40, metavar='N',
                             help='period of weight decay (default: 40)')
@@ -234,9 +234,9 @@ class BaseOptions(object):
         parser.add_argument('--checkpoint_interval', type=int, default=10, metavar='N',
                             help='checkpoint interval (epoch)')
         parser.add_argument('--dataset', type=str, default='MNIST',
-                            help='dataset: MNIST | Cifar10 | PASCAL_VOC | CUB200')
+                            help='dataset: MNIST | Cifar10 | PASCAL_VOC | CUB200 | FashionMNIST')
         parser.add_argument('--source_dataset', type=str, default=None,
-                            help='dataset: MNIST | Cifar10 | PASCAL_VOC | CUB200')
+                            help='dataset: MNIST | Cifar10 | PASCAL_VOC | CUB200| FashionMNIST')
         parser.add_argument('--dataset_root', type=str, default=None,
                             help='dataset root')
         parser.add_argument('--results_dir', type=str, default='./results/',
@@ -456,12 +456,11 @@ class BaseOptions(object):
         if state.mode != 'train':
             assert_divided_by_world_size('test_n_nets')
             assert_divided_by_world_size('sample_n_nets')
-
-        if state.device_id < 0:
-            state.opt.device = torch.device("cpu")
-        else:
-            torch.cuda.set_device(state.device_id)
-            state.opt.device = torch.device("cuda:{}".format(state.device_id))
+        #no cuda
+        
+        state.opt.device = torch.device("cpu")
+        
+    
 
         if not dummy:
             if state.device.type == 'cuda' and torch.backends.cudnn.enabled:

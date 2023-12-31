@@ -173,7 +173,10 @@ class Trainer(object):
             bwd_out += list(lrs)
             bwd_grad += list(glrs)
             for d, g in zip(datas, gdatas):
-                d.grad.add_(g)
+                if d.grad is not None:
+                    d.grad.add_(g)
+                else:
+                    d.grad = g.clone()
         if len(bwd_out) > 0:
             torch.autograd.backward(bwd_out, bwd_grad)
 
@@ -210,9 +213,6 @@ class Trainer(object):
 
         for epoch, it, (rdata, rlabel) in self.prefetch_train_loader_iter():
             data_t = time.time() - data_t0
-
-            if it == 0:
-                self.scheduler.step()
 
             if it == 0 and ((ckpt_int >= 0 and epoch % ckpt_int == 0) or epoch == 0):
                 with torch.no_grad():
@@ -262,6 +262,12 @@ class Trainer(object):
 
             # opt step
             self.optimizer.step()
+
+
+            if it == 0:
+                self.scheduler.step()
+
+            
             t = time.time() - t0
 
             if do_log_this_iter:
