@@ -278,8 +278,8 @@ def evaluate_steps(state, steps, prefix, details='', test_all=False, test_at_ste
             pbar.close()
 
         at_steps = torch.as_tensor(at_steps, device=state.device)  # STEP
-        accs = torch.as_tensor(accs, device=state.device)          # STEP x MODEL (x CLASS)
-        losses = torch.as_tensor(losses, device=state.device)      # STEP x MODEL
+        accs = torch.as_tensor(np.array(accs), device=state.device)          # STEP x MODEL (x CLASS)
+        losses = torch.as_tensor(np.array(losses), device=state.device)      # STEP x MODEL
         return at_steps, accs, losses
 
     if log_results:

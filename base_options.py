@@ -209,7 +209,7 @@ class BaseOptions(object):
         for name, action_cls in action_registry.items():
             action_registry[name] = get_unique_action_cls(action_cls)
 
-        parser.add_argument('--batch_size', type=pos_int, default=256,
+        parser.add_argument('--batch_size', type=pos_int, default=1024,
                             help='input batch size for training (default: 1024)')
         parser.add_argument('--test_batch_size', type=pos_int, default=1024,
                             help='input batch size for testing (default: 1024)')
@@ -219,7 +219,7 @@ class BaseOptions(object):
                             help='number of total epochs to train (default: 400)')
         parser.add_argument('--decay_epochs', type=pos_int, default=40, metavar='N',
                             help='period of weight decay (default: 40)')
-        parser.add_argument('--decay_factor', type=pos_float, default=0.5, metavar='N',
+        parser.add_argument('--decay_factor', type=pos_float, default=0.1, metavar='N',
                             help='weight decay multiplicative factor (default: 0.1)')
         parser.add_argument('--lr', type=pos_float, default=0.01, metavar='LR',
                             help='learning rate used to actually learn stuff (default: 0.01)')
@@ -297,7 +297,7 @@ class BaseOptions(object):
                                  'Default: None.')
         parser.add_argument('--test_optimize_n_nets', default=20, type=pos_int,
                             help='number of networks used to optimize data. See doc for test_optimize_n_runs.')
-        parser.add_argument('--num_workers', type=nonneg_int, default=8,
+        parser.add_argument('--num_workers', type=nonneg_int, default=2, #reduce to 2 on this machine 
                             help='number of data loader workers')
         parser.add_argument('--no_log', action='store_true',
                             help='if set, will not log into file')
